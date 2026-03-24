@@ -1,7 +1,6 @@
 
-import java.util.*;
 import java.io.*;
-import java.lang.reflect.Array;
+import java.util.*;
 
 public class Carro {
 
@@ -91,7 +90,7 @@ public class Carro {
 
     private static boolean login(Scanner scanner) {
         System.out.println("\n╔══════════════════════════════╗");
-        System.out.println("║         🔐  LOGIN             ║");
+        System.out.println("║           LOGIN              ║");
         System.out.println("╚══════════════════════════════╝");
 
         for (int tentativas = 3; tentativas > 0; tentativas--) {
@@ -107,7 +106,7 @@ public class Carro {
                     if (partes[0].equals(usuario) && partes[1].equals(senha)) {
                         usuarioLogado = usuario;
                         perfilLogado = partes[2];
-                        System.out.println("✅ Bem-vindo, " + usuario + "! [" + perfilLogado + "]");
+                        System.out.println(" Bem-vindo, " + usuario + "! [" + perfilLogado + "]");
                         return true;
                     }
                 }
@@ -119,14 +118,14 @@ public class Carro {
             System.out.println("❌ Usuário ou senha incorretos. Tentativas restantes: " + (tentativas - 1));
         }
 
-        System.out.println("🔒 Acesso bloqueado após 3 tentativas.");
+        System.out.println(" Acesso bloqueado após 3 tentativas.");
         return false;
     }
 
     // Somente admin pode registrar novos usuários
     private static void registrarUsuario(Scanner scanner) {
         if (!perfilLogado.equals("admin")) {
-            System.out.println("❌ Apenas administradores podem criar usuários.");
+            System.out.println(" Apenas administradores podem criar usuários.");
             return;
         }
 
@@ -137,13 +136,13 @@ public class Carro {
         System.out.print("Perfil (admin/usuario): ");
         String perfil = scanner.nextLine().trim();
         if (!perfil.equals("admin") && !perfil.equals("usuario")) {
-            System.out.println("❌ Perfil inválido! Use 'admin' ou 'usuario'.");
+            System.out.println(" Perfil inválido! Use 'admin' ou 'usuario'.");
             return;
         }
 
         try (PrintWriter pw = new PrintWriter(new FileWriter(ARQUIVO_USUARIOS, true))) {
             pw.println(novoUsuario + ":" + novaSenha + ":" + perfil);
-            System.out.println("✅ Usuário criado com sucesso!");
+            System.out.println(" Usuário criado com sucesso!");
         } catch (IOException e) {
             System.out.println("Erro ao salvar usuário.");
         }
@@ -157,9 +156,9 @@ public class Carro {
             for (Carro c : lista) {
                 pw.println(c.paraCsv());
             }
-            System.out.println("✅ " + lista.size() + " carro(s) salvo(s) em " + ARQUIVO_CARROS);
+            System.out.println(" " + lista.size() + " carro(s) salvo(s) em " + ARQUIVO_CARROS);
         } catch (IOException e) {
-            System.out.println("❌ Erro ao salvar carros: " + e.getMessage());
+            System.out.println(" Erro ao salvar carros: " + e.getMessage());
         }
     }
 
@@ -177,9 +176,9 @@ public class Carro {
                     lista.add(Carro.doCsv(linha));
                 }
             }
-            System.out.println("✅ " + lista.size() + " carro(s) carregado(s) do arquivo.");
+            System.out.println(" " + lista.size() + " carro(s) carregado(s) do arquivo.");
         } catch (IOException | NumberFormatException e) {
-            System.out.println("⚠️ Erro ao carregar carros: " + e.getMessage());
+            System.out.println(" Erro ao carregar carros: " + e.getMessage());
         }
         return lista;
     }
@@ -189,7 +188,7 @@ public class Carro {
     // ======================================================
     private static void exibirMenu() {
         System.out.println("\n╔══════════════════════════════╗");
-        System.out.printf("║   🚗 CONCESSIONÁRIA [%s]%s║%n",
+        System.out.printf("║     CONCESSIONÁRIA  [%s]%s║%n",
                 perfilLogado, perfilLogado.equals("admin") ? "  " : " ");
         System.out.println("╠══════════════════════════════╣");
         System.out.println("║  1 - Adicionar carro         ║");
@@ -203,6 +202,10 @@ public class Carro {
         if (perfilLogado.equals("admin")) {
             System.out.println("║  9 - Criar novo usuário      ║");
         }
+        System.out.println("║  10-Contagem de carros na lista  ║");
+        System.out.println("║  11 -o carro mais barato e o mais caro  ║");
+        System.out.println("║  12 -Filtrar carro por marca  ║");
+        System.out.println("║  13 - media de preços  ║");
         System.out.println("║  0 - Sair                    ║");
         System.out.println("╚══════════════════════════════╝");
         System.out.print("Opção: ");
@@ -226,7 +229,7 @@ public class Carro {
             exibirMenu();
 
             if (!scanner.hasNextInt()) {
-                System.out.println("❌ Digite apenas números!");
+                System.out.println(" Digite apenas números!");
                 scanner.nextLine();
                 continue;
             }
@@ -240,7 +243,7 @@ public class Carro {
                 case 2 ->
                     removerCarro(lista, scanner);
                 case 3 ->
-                    editarCarro(lista, scanner); // 🆕
+                    editarCarro(lista, scanner);
                 case 4 ->
                     buscarCarro(lista, scanner);
                 case 5 ->
@@ -250,15 +253,23 @@ public class Carro {
                 case 7 ->
                     salvarCarros(lista);
                 case 8 ->
-                    filtrarporpreco(lista); // 🆕
+                    filtrarporpreco(lista, scanner);
                 case 9 ->
-                    registrarUsuario(scanner); // 🆕 admin only
+                    registrarUsuario(scanner);
+                case 10 ->
+                    ContarCarros(lista);
+                case 11 ->
+                    MaisBaratoeMaisCaro(lista);
+                case 12 ->
+                    filtrarMarca(lista, scanner);
+                case 13 ->
+                    caclularmediadepreco(lista);
                 case 0 -> {
                     salvarCarros(lista); // salva automaticamente ao sair
-                    System.out.println("Até logo, " + usuarioLogado + "! 👋");
+                    System.out.println("Até logo, " + usuarioLogado);
                 }
                 default ->
-                    System.out.println("❌ Opção inválida.");
+                    System.out.println(" Opção inválida.");
             }
         }
 
@@ -271,7 +282,7 @@ public class Carro {
     private static void adicionarCarro(ArrayList<Carro> lista, Scanner scanner) {
         // Somente admin pode adicionar
         if (!perfilLogado.equals("admin")) {
-            System.out.println("❌ Apenas administradores podem adicionar carros.");
+            System.out.println(" Apenas administradores podem adicionar carros.");
             return;
         }
         System.out.println("\n--- Adicionar Carro ---");
@@ -280,12 +291,12 @@ public class Carro {
                 lerTexto(scanner, "Marca: "),
                 lerAno(scanner),
                 lerPreco(scanner)));
-        System.out.println("✅ Carro adicionado!");
+        System.out.println(" Carro adicionado!");
     }
 
     private static void removerCarro(ArrayList<Carro> lista, Scanner scanner) {
         if (!perfilLogado.equals("admin")) {
-            System.out.println("❌ Apenas administradores podem remover carros.");
+            System.out.println(" Apenas administradores podem remover carros.");
             return;
         }
         if (listaVazia(lista)) {
@@ -297,14 +308,30 @@ public class Carro {
         if (i == -1) {
             return;
         }
-        System.out.println("✅ \"" + lista.get(i).getModelo() + "\" removido.");
+        System.out.println(" \"" + lista.get(i).getModelo() + "\" removido.");
         lista.remove(i);
     }
 
-    // 🆕 EDITAR — permite alterar campo por campo
+    public static void ContarCarros(ArrayList<Carro> lista) {
+
+        System.out.println("a quantidade de carros dentro da lista é: " + lista.size());
+    }
+
+    public static void MaisBaratoeMaisCaro(ArrayList<Carro> lista) {
+
+        Carro precoMaximo = Collections.max(lista, Comparator.comparingDouble(Carro::getPreco));
+        Carro precoMinimo = Collections.min(lista, Comparator.comparingDouble(Carro::getPreco));
+
+        System.out.print("o carro mais barato tem este valor");
+        precoMinimo.exibirInfo(1);
+        System.out.print("o carro mais caro tem este valor");
+        precoMaximo.exibirInfo((1));
+    }
+
+    //  EDITAR — permite alterar campo por campo
     private static void editarCarro(ArrayList<Carro> lista, Scanner scanner) {
         if (!perfilLogado.equals("admin")) {
-            System.out.println("❌ Apenas administradores podem editar carros.");
+            System.out.println(" Apenas administradores podem editar carros.");
             return;
         }
         if (listaVazia(lista)) {
@@ -346,11 +373,11 @@ public class Carro {
             try {
                 c.setPreco(Double.parseDouble(v.replace(",", ".")));
             } catch (NumberFormatException e) {
-                System.out.println("⚠️ Preço inválido, mantido o anterior.");
+                System.out.println(" Preço inválido, mantido o anterior.");
             }
         }
 
-        System.out.println("✅ Carro atualizado!");
+        System.out.println(" Carro atualizado!");
     }
 
     private static void buscarCarro(ArrayList<Carro> lista, Scanner scanner) {
@@ -371,6 +398,51 @@ public class Carro {
         }
     }
 
+    private static void filtrarMarca(ArrayList<Carro> lista, Scanner scanner) {
+        if (listaVazia(lista)) {
+            return;
+        }
+
+        System.out.print("Qual marca você quer para seu carro? ");
+        String marca = scanner.nextLine().trim().toLowerCase();
+        boolean achou = false;
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getMarca().toLowerCase().contains(marca)) {
+                lista.get(i).exibirInfo(i + 1);
+                achou = true;
+            }
+        }
+        if (!achou) {
+            System.out.print("nenhum resultado para:  " + marca);
+        }
+
+    }
+
+    private static void caclularmediadepreco(ArrayList<Carro> lista) {
+        if (listaVazia(lista)) {
+            return;
+        }
+        double soma = 0;
+
+        for (int i = 0; i < lista.size(); i++) {
+
+            double preco = lista.get(i).getPreco();
+            soma += preco;
+
+        }
+        double resultado = soma / lista.size();
+        System.out.printf("Média de preços: R$ %.2f%n", resultado);
+
+    }
+
+    private static void ordenarporano(ArrayList<Carro> lista) {
+      
+
+
+        lista.sort((a, b) -> Integer.compare( Integer.parseInt(a.getAno()) ,  Integer.parseInt(b.getAno()) ));
+//                                   
+    }
+
     private static void filtrarporpreco(ArrayList<Carro> lista, Scanner scanner) {
         if (listaVazia(lista)) {
             return;
@@ -381,11 +453,10 @@ public class Carro {
         double max = lerPreco(scanner);
         boolean achou = false;
 
-        
         for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getPreco() >= min && lista.get(i).getPreco() <= max){
+            if (lista.get(i).getPreco() >= min && lista.get(i).getPreco() <= max) {
                 lista.get(i).exibirInfo(i + 1);
-                achou =true;
+                achou = true;
             }
         }
         if (!achou) {
@@ -418,7 +489,7 @@ public class Carro {
     // ======================================================
     private static boolean listaVazia(ArrayList<Carro> lista) {
         if (lista.isEmpty()) {
-            System.out.println("⚠️ Nenhum carro cadastrado.");
+            System.out.println(" Nenhum carro cadastrado.");
             return true;
         }
         return false;
@@ -430,7 +501,7 @@ public class Carro {
             System.out.print(msg);
             v = scanner.nextLine().trim();
             if (v.isEmpty()) {
-                System.out.println("❌ Campo obrigatório!");
+                System.out.println(" Campo obrigatório!");
             }
         } while (v.isEmpty());
         return v;
@@ -442,7 +513,7 @@ public class Carro {
             System.out.print("Ano: ");
             ano = scanner.nextLine().trim();
             if (!ano.matches("\\d{4}") || Integer.parseInt(ano) < 1886 || Integer.parseInt(ano) > 2025) {
-                System.out.println("❌ Ano inválido!");
+                System.out.println(" Ano inválido!");
                 ano = "";
             }
         } while (ano.isEmpty());
@@ -457,11 +528,11 @@ public class Carro {
                 preco = scanner.nextDouble();
                 scanner.nextLine();
                 if (preco <= 0) {
-                    System.out.println("❌ Preço deve ser positivo!");
+                    System.out.println(" Preço deve ser positivo!");
                     preco = -1;
                 }
             } else {
-                System.out.println("❌ Valor inválido!");
+                System.out.println(" Valor inválido!");
                 scanner.nextLine();
             }
         } while (preco == -1);
@@ -470,14 +541,14 @@ public class Carro {
 
     private static int lerIndice(Scanner scanner, int tamanho) {
         if (!scanner.hasNextInt()) {
-            System.out.println("❌ Entrada inválida!");
+            System.out.println("Entrada inválida!");
             scanner.nextLine();
             return -1;
         }
         int i = scanner.nextInt() - 1;
         scanner.nextLine();
         if (i < 0 || i >= tamanho) {
-            System.out.println("❌ Número fora da lista!");
+            System.out.println(" Número fora da lista!");
             return -1;
         }
         return i;

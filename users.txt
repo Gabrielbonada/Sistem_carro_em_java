@@ -1,3 +1,6 @@
 admin:1234:admin
 joao:abcd:usuario
 gabriel:123456:usuario
+jose:pinto123:usuario
+
+
