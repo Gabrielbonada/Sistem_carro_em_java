@@ -115,7 +115,7 @@ public class Carro {
                 return false;
             }
 
-            System.out.println("❌ Usuário ou senha incorretos. Tentativas restantes: " + (tentativas - 1));
+            System.out.println(" Usuário ou senha incorretos. Tentativas restantes: " + (tentativas - 1));
         }
 
         System.out.println(" Acesso bloqueado após 3 tentativas.");
@@ -204,8 +204,9 @@ public class Carro {
         }
         System.out.println("║  10-Contagem de carros na lista  ║");
         System.out.println("║  11 -o carro mais barato e o mais caro  ║");
-        System.out.println("║  12 -Filtrar carro por marca  ║");
-        System.out.println("║  13 - media de preços  ║");
+        System.out.println("║  12 -Filtrar carro por marca ║");
+        System.out.println("║  13 - media de preços        ║");
+        System.out.println("║  14 - ordenar por ano        ║");
         System.out.println("║  0 - Sair                    ║");
         System.out.println("╚══════════════════════════════╝");
         System.out.print("Opção: ");
@@ -220,9 +221,9 @@ public class Carro {
         inicializarUsuarios();
 
         if (!login(scanner)) {
-            return; // encerra se não logar
+            return; 
         }
-        ArrayList<Carro> lista = carregarCarros(); // carrega ao iniciar
+        ArrayList<Carro> lista = carregarCarros(); 
         int opcao = -1;
 
         while (opcao != 0) {
@@ -264,6 +265,8 @@ public class Carro {
                     filtrarMarca(lista, scanner);
                 case 13 ->
                     caclularmediadepreco(lista);
+                case 14 ->
+                    ordenarPorAno(lista);
                 case 0 -> {
                     salvarCarros(lista); // salva automaticamente ao sair
                     System.out.println("Até logo, " + usuarioLogado);
@@ -380,6 +383,20 @@ public class Carro {
         System.out.println(" Carro atualizado!");
     }
 
+    private static void ordenarPorAno(ArrayList<Carro> lista) {
+        if (listaVazia(lista)) {
+            return;
+        }
+
+        lista.sort((a, b) -> Integer.compare(
+                Integer.parseInt(a.getAno()),
+                Integer.parseInt(b.getAno())
+        ));
+
+        System.out.println("✅ Lista ordenada por ano!");
+        listarCarros(lista);
+    }
+
     private static void buscarCarro(ArrayList<Carro> lista, Scanner scanner) {
         if (listaVazia(lista)) {
             return;
@@ -436,11 +453,13 @@ public class Carro {
     }
 
     private static void ordenarporano(ArrayList<Carro> lista) {
-      
 
-
-        lista.sort((a, b) -> Integer.compare( Integer.parseInt(a.getAno()) ,  Integer.parseInt(b.getAno()) ));
+        lista.sort((a, b) -> Integer.compare(Integer.parseInt(a.getAno()), Integer.parseInt(b.getAno())));
 //                                   
+    }
+
+    private static void alternarsenha(Scanner scanner){
+        String Novasenha = 
     }
 
     private static void filtrarporpreco(ArrayList<Carro> lista, Scanner scanner) {
