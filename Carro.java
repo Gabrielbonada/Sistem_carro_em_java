@@ -207,6 +207,9 @@ public class Carro {
         System.out.println("║  12 -Filtrar carro por marca ║");
         System.out.println("║  13 - media de preços        ║");
         System.out.println("║  14 - ordenar por ano        ║");
+        System.out.println("║  15 - Alternar senha         ║");
+        System.out.println("║  16 - Exibir Usuarios        ║");
+        System.out.println("║  17 -  exportacao limpa      ║");
         System.out.println("║  0 - Sair                    ║");
         System.out.println("╚══════════════════════════════╝");
         System.out.print("Opção: ");
@@ -221,9 +224,9 @@ public class Carro {
         inicializarUsuarios();
 
         if (!login(scanner)) {
-            return; 
+            return;
         }
-        ArrayList<Carro> lista = carregarCarros(); 
+        ArrayList<Carro> lista = carregarCarros();
         int opcao = -1;
 
         while (opcao != 0) {
@@ -267,6 +270,12 @@ public class Carro {
                     caclularmediadepreco(lista);
                 case 14 ->
                     ordenarPorAno(lista);
+                case 15 -> 
+                    alternarsenha(scanner);
+                case 16 ->
+                    exibirUsuarios(scanner);
+                case 17 ->
+                    exportacaolimpa(scanner);
                 case 0 -> {
                     salvarCarros(lista); // salva automaticamente ao sair
                     System.out.println("Até logo, " + usuarioLogado);
@@ -331,7 +340,7 @@ public class Carro {
         precoMaximo.exibirInfo((1));
     }
 
-    //  EDITAR — permite alterar campo por campo
+    // EDITAR — permite alterar campo por campo
     private static void editarCarro(ArrayList<Carro> lista, Scanner scanner) {
         if (!perfilLogado.equals("admin")) {
             System.out.println(" Apenas administradores podem editar carros.");
@@ -390,10 +399,9 @@ public class Carro {
 
         lista.sort((a, b) -> Integer.compare(
                 Integer.parseInt(a.getAno()),
-                Integer.parseInt(b.getAno())
-        ));
+                Integer.parseInt(b.getAno())));
 
-        System.out.println("✅ Lista ordenada por ano!");
+        System.out.println(" Lista ordenada por ano!");
         listarCarros(lista);
     }
 
@@ -452,15 +460,90 @@ public class Carro {
 
     }
 
-    private static void ordenarporano(ArrayList<Carro> lista) {
+    public static void ordenarporano(ArrayList<Carro> lista , Scanner scanner) {
 
         lista.sort((a, b) -> Integer.compare(Integer.parseInt(a.getAno()), Integer.parseInt(b.getAno())));
-//                                   
+        
     }
 
-    private static void alternarsenha(Scanner scanner){
-        String Novasenha = 
+    private static void alternarsenha(Scanner scanner) {
+
+        System.out.println("Alterando senha ");
+        String novaSenha = lerTexto(scanner, "escolha uma nova senha: ");
+        ArrayList<String> linhas = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                linhas.add(linha);
+            }
+        } catch (IOException e) {
+            System.out.println(" Erro ao ler usuários: " + e.getMessage());
+            return;
+        }
+
+        for (int i = 0; i < linhas.size(); i++) {
+            String[] partes = linhas.get(i).split(":");
+            if (partes[0].equals(usuarioLogado)) {
+                linhas.set(i, usuarioLogado + ":" + novaSenha + ":" + partes[2]);
+            }
+        }
+        try (PrintWriter pw = new PrintWriter(new FileWriter(ARQUIVO_USUARIOS))) {
+            for (String linha : linhas) {
+                pw.println(linha);
+            }
+        } catch (IOException e) {
+            System.out.println(" Erro ao ler usuários: " + e.getMessage());
+            return;
+        }
+        System.out.println(" Senha alterada com sucesso!");
     }
+
+    private static void exibirUsuarios(Scanner scanner) {
+        if (!perfilLogado.equals("admin")) {
+            System.out.println(" Apenas administradores podem adicionar carros.");
+            return;
+        }
+
+        ArrayList<String> linhas = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_USUARIOS))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                linhas.add(linha);
+            }
+        } catch (IOException e) {
+            System.out.println(" Erro ao ler usuários: " + e.getMessage());
+            return;
+        }
+
+        for (String linha : linhas){
+            String []partes = linha.split(":");
+            System.out.println("Usuario = " + partes[0] + "Tipo de usuario: " + partes[2]);
+        }
+    }
+
+ public static void exportacaolimpa(Scanner scanner) {
+    try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_CARROS))) {
+        String linha;
+
+        while ((linha = br.readLine()) != null) {
+            String[] partes = linha.split(",");
+
+            System.out.println(
+                "Modelo: " + partes[0] +
+                " | Marca: " + partes[1] +
+                " | Ano: " + partes[2] +
+                " | Valor: R$ " + partes[3]
+            );
+        }
+
+    } catch (IOException e) {
+        System.out.println("Erro ao ler carros: " + e.getMessage());
+    }
+}
+
+
+    
 
     private static void filtrarporpreco(ArrayList<Carro> lista, Scanner scanner) {
         if (listaVazia(lista)) {
