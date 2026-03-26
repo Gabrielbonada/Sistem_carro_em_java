@@ -162,6 +162,28 @@ public class Carro {
         }
     }
 
+    private static ArrayList<Carro> carregandofavoritos() {
+        ArrayList<Carro> favoritos = new ArrayList<>();
+        File b = new File(ARQUIVO_CARROS_FAVORITOS);
+        if (!b.exists()) {
+            return favoritos;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(b))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                if (!linha.isBlank()) {
+                    linha.add(Carro.doCsv(linha));
+                }
+            }
+            System.out.println(" " + lista.size() + " carro(s) carregado(s) do arquivo.");
+        } catch (IOException | NumberFormatException e) {
+            System.out.println(" Erro ao carregar carros: " + e.getMessage());
+        }
+    }
+
+    
+
     private static ArrayList<Carro> carregarCarros() {
         ArrayList<Carro> lista = new ArrayList<>();
         File f = new File(ARQUIVO_CARROS);
@@ -270,7 +292,7 @@ public class Carro {
                     caclularmediadepreco(lista);
                 case 14 ->
                     ordenarPorAno(lista);
-                case 15 -> 
+                case 15 ->
                     alternarsenha(scanner);
                 case 16 ->
                     exibirUsuarios(scanner);
@@ -291,6 +313,10 @@ public class Carro {
     // ======================================================
     // FUNCIONALIDADES
     // ======================================================
+    private static void sistemadefavoritos(ArrayList<Carro> lista) {
+
+    }
+
     private static void adicionarCarro(ArrayList<Carro> lista, Scanner scanner) {
         // Somente admin pode adicionar
         if (!perfilLogado.equals("admin")) {
@@ -460,10 +486,10 @@ public class Carro {
 
     }
 
-    public static void ordenarporano(ArrayList<Carro> lista , Scanner scanner) {
+    public static void ordenarporano(ArrayList<Carro> lista, Scanner scanner) {
 
         lista.sort((a, b) -> Integer.compare(Integer.parseInt(a.getAno()), Integer.parseInt(b.getAno())));
-        
+
     }
 
     private static void alternarsenha(Scanner scanner) {
@@ -516,34 +542,30 @@ public class Carro {
             return;
         }
 
-        for (String linha : linhas){
-            String []partes = linha.split(":");
+        for (String linha : linhas) {
+            String[] partes = linha.split(":");
             System.out.println("Usuario = " + partes[0] + "Tipo de usuario: " + partes[2]);
         }
     }
 
- public static void exportacaolimpa(Scanner scanner) {
-    try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_CARROS))) {
-        String linha;
+    public static void exportacaolimpa(Scanner scanner) {
+        try (BufferedReader br = new BufferedReader(new FileReader(ARQUIVO_CARROS))) {
+            String linha;
 
-        while ((linha = br.readLine()) != null) {
-            String[] partes = linha.split(",");
+            while ((linha = br.readLine()) != null) {
+                String[] partes = linha.split(",");
 
-            System.out.println(
-                "Modelo: " + partes[0] +
-                " | Marca: " + partes[1] +
-                " | Ano: " + partes[2] +
-                " | Valor: R$ " + partes[3]
-            );
+                System.out.println(
+                        "Modelo: " + partes[0]
+                        + " | Marca: " + partes[1]
+                        + " | Ano: " + partes[2]
+                        + " | Valor: R$ " + partes[3]);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Erro ao ler carros: " + e.getMessage());
         }
-
-    } catch (IOException e) {
-        System.out.println("Erro ao ler carros: " + e.getMessage());
     }
-}
-
-
-    
 
     private static void filtrarporpreco(ArrayList<Carro> lista, Scanner scanner) {
         if (listaVazia(lista)) {
